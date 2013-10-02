@@ -9,6 +9,20 @@ class ReplRunnerTest < Test::Unit::TestCase
       repl.run("b = 'bar'")         {} # test empty block doesn't throw exceptions
       repl.run("a * 5")             {|r| assert_match 'foofoofoofoofoo', r }
     end
+
+    ReplRunner.new(:irb, "irb").run do |repl|
+      repl.run('111+111')           {|r| assert_match '222', r }
+      repl.run("'hello' + 'world'") {|r| assert_match 'helloworld', r }
+      repl.run("a = 'foo'")
+      repl.run("b = 'bar'")         {} # test empty block doesn't throw exceptions
+      repl.run("a * 5")             {|r| assert_match 'foofoofoofoofoo', r }
+    end
+  end
+
+  def test_does_not_have_trailing_prompts
+    ReplRunner.new(:irb, "irb ").run do |repl|
+      repl.run('111+111')           {|r| assert_equal "=> 222", r.strip }
+    end
   end
 
   def test_ensure_exit
@@ -31,10 +45,20 @@ class ReplRunnerTest < Test::Unit::TestCase
     end
   end
 
-  def test_heroku
-    # ReplRunner.new('rails console', "heroku run rails console -a test-app-1372231309-0734751").run do |repl|
-    #   repl.run("'foo' * 5")          {|r| assert_match /foofoofoofoofoo/, r }
-    #   repl.run("'hello ' + 'world'") {|r| assert_match /hello world/, r }
-    # end
+  def test_zipping_commands
+    commands = "a = 3\nb = 'foo' * a\nputs b"
+    zip      = ReplRunner.new(:irb).zip(commands)
+    actual   = [["a = 3", "=> 3\r"],
+                ["b = 'foo' * a", "=> \"foofoofoo\"\r"],
+                ["puts b", "foofoofoo\r\n=> nil\r"]]
+    assert_equal actual, zip
+
+    expected = ["a = 3",
+                "=> 3\r",
+                "b = 'foo' * a",
+                "=> \"foofoofoo\"\r",
+                "puts b",
+                "foofoofoo\r\n=> nil\r"]
+    assert_equal expected, zip.flatten
   end
 end

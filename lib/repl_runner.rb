@@ -59,6 +59,17 @@ class ReplRunner
     repl.close
   end
 
+  def zip(string)
+    results = []
+    lines   = string.lines.map(&:rstrip)
+    self.run do |repl|
+      lines.each do |line|
+        repl.run(line) {|result| results << result }
+      end
+    end
+    lines.zip(results)
+  end
+
   def run(&block)
     repl = start
     yield repl

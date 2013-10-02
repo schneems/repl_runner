@@ -1,5 +1,6 @@
 class ReplRunner
   class MultiCommandParser
+    STRIP_TRAILING_PROMPT_REGEX = /(\r|\n)+/
     attr_accessor :commands, :raw
 
     def initialize(commands, terminate_command = nil)
@@ -20,11 +21,13 @@ class ReplRunner
       string = string.gsub(command_to_regex(@terminate_command), '') if @terminate_command
       # attack the string from the end
       commands.reverse.each do |command|
-        regex  = command_to_regex(command)
-        result_array = string.split(regex)
-        @parsed_result << result_array.pop
-        raise NoResults.new(command, raw) if @parsed_result.last.blank?
-        string = result_array.join('')
+        regex = command_to_regex(command)
+        before, match, result = string.rpartition(regex)
+
+        raise NoResults.new(command, raw) if result.empty?
+
+        string = before
+        @parsed_result << result.rpartition(STRIP_TRAILING_PROMPT_REGEX).first
       end
 
       @parsed_result.reverse!
