@@ -73,7 +73,7 @@ class ReplRunner
       @jobs.each_with_index do |job, index|
         job.call(output_array[index])
       end
-    rescue NoResults => e
+    rescue NoResultsError => e
       raise e, "Booting up REPL with command: #{command.inspect} \n#{e.message}"
     end
   end

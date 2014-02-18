@@ -33,7 +33,7 @@ class ReplRunnerTest < Test::Unit::TestCase
   end
 
   def test_ensure_exit
-    assert_raise(ReplRunner::NoResults) do
+    assert_raise(ReplRunner::NoResultsError) do
       ReplRunner.new(:irb, "irb -r ./test/require/never-boots.rb", startup_timeout: 2).run do |repl|
         repl.run('111+111') {|r| }
       end

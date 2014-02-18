@@ -24,7 +24,7 @@ class ReplRunner
         regex = command_to_regex(command)
         before, match, result = string.rpartition(regex)
 
-        raise NoResults.new(command, raw) if result.empty?
+        raise NoResultsError.new(command, regex, raw) if result.empty?
 
         string = before
         @parsed_result << result.rpartition(STRIP_TRAILING_PROMPT_REGEX).first
