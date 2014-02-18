@@ -8,9 +8,10 @@ require 'active_support/core_ext/object/blank'
 class ReplRunner
   attr_accessor :command, :repl
 
-  class NoResults < StandardError
-    def initialize(command, string)
-      msg = "No result found for command: #{command.inspect} in output: #{string.inspect}"
+  class NoResultsError < StandardError
+    def initialize(command, regex, string)
+      msg =  "No result found for command: #{command.inspect}\nIn output: \n  #{string.inspect}\n"
+      msg << "Using regex: \n  /#{regex}/\n"
       super(msg)
     end
   end
@@ -23,6 +24,7 @@ class ReplRunner
   end
 
   def initialize(cmd_type, command = nil, options = {})
+    raise "Unexpected block, use the `run` command instead?" if block_given?
     command  = cmd_type.to_s if command.nil?
     cmd_type = cmd_type.chomp.gsub(/\s/, '_').to_sym if cmd_type.is_a?(String)
     @command = command

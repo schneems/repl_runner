@@ -28,13 +28,15 @@ Then run `$ bundle install`.
 
 To open a remote rails console on heroku with the heroku toolbelt installed, you could drive it like this:
 
-```
+```ruby
 ReplRunner.new(:rails_console, "heroku run rails console -a testapp").run do |repl|
   repl.run('a = 1 + 1')         {|result| assert_match '2', result }
   repl.run('"hello" + "world"') {|result| assert_match 'helloworld', result }
   repl.run("a * 'foo'")         {|result| assert_match 'foofoo', result}
 end
 ```
+
+**Note:** do not forget to call `run` on the ReplRunner object.
 
 The first argument `:rails_console` tells ReplReader what type of a session we are going to open up. The second `"heroku run rails console -a testapp"` is the command we want to use to start our psuedo remote terminal.
 
@@ -47,13 +49,13 @@ Also note that you will get the entire return including any prompts if you run a
 ```
 $ irb
 1.9.3p392 :001 > 1 + 1
- => 2
+=> 2
 ```
 
 So when you run this via ReplRunner you will get a result string like this
 
-```
-ReplRunner.new(:irb) do |repl|
+```ruby
+ReplRunner.new(:irb).run do |repl|
   repl.run('1 + 1') {|result| puts result }
 end
 " => 2\r\r\n"

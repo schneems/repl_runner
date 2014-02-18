@@ -19,6 +19,13 @@ class ReplRunnerTest < Test::Unit::TestCase
     end
   end
 
+  def test_forgot_run
+    assert_raise RuntimeError do
+      ReplRunner.new(:irb, "irb") do |repl|
+      end
+    end
+  end
+
   def test_does_not_have_trailing_prompts
     ReplRunner.new(:irb, "irb ").run do |repl|
       repl.run('111+111')           {|r| assert_equal "=> 222", r.strip }
