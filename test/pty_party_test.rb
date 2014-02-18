@@ -13,6 +13,18 @@ class StreamExecTest < Test::Unit::TestCase
     repl.write("STDOUT.sync = true\n")
     repl.write("1+1\n")
     repl.write("exit\n")
-    assert_equal "STDOUT.sync = true\r\n1+1\r\nexit\r\n>> STDOUT.sync = true\r\n=> true\r\n>> 1+1\r\n=> 2\r\n>> exit\r\n", repl.read
+    result = repl.read
+    [
+      "STDOUT.sync = true",
+      "1+1",
+      "exit",
+      ">> STDOUT.sync = true",
+      "=> true",
+      ">> 1+1",
+      "=> 2",
+      ">> exit"
+    ].each do |expected|
+      assert_match /#{Regexp.escape(expected)}/, result
+    end
   end
 end
