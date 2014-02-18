@@ -1,4 +1,4 @@
-ReplRunner.register_command(:rails_console, :irb)  do |config|
+ReplRunner.register_command(:rails_console, :irb, /^bin\/rails/)  do |config|
   config.terminate_command "exit"          # the command you use to end the 'rails console'
   config.startup_timeout 60                # seconds to boot
   config.return_char "\n"                  # the character that submits the command

@@ -6,7 +6,7 @@ require 'pty'
 require 'active_support/core_ext/object/blank'
 
 class ReplRunner
-  attr_accessor :command, :repl
+  attr_accessor :command, :repl, :config
 
   class NoResultsError < StandardError
     def initialize(command, regex, string)
@@ -29,9 +29,16 @@ class ReplRunner
     cmd_type = cmd_type.chomp.gsub(/\s/, '_').to_sym if cmd_type.is_a?(String)
     @command = command
     @repl    = nil
-    @config  = known_configs[cmd_type]
+    @config  = get_config_for_command(cmd_type)
     raise UnregisteredCommand.new(cmd_type) unless @config
     @options = options
+  end
+
+  def get_config_for_command(cmd_type)
+    known_configs.detect do |cmd_match, config|
+      return config if cmd_match == cmd_type
+      return config if cmd_match.is_a?(Regexp) && cmd_match =~ cmd_type.to_s
+    end
   end
 
   def known_configs

@@ -25,4 +25,9 @@ class ConfigTest < Test::Unit::TestCase
 
     assert_equal @hash, config.to_options
   end
+
+  def test_default_config
+    runner = ReplRunner.new("bin/rails console")
+    assert_equal "exit", runner.config.to_options[:terminate_command]
+  end
 end
