@@ -53,19 +53,25 @@ class ReplRunnerTest < Test::Unit::TestCase
   end
 
   def test_zipping_commands
-    commands = "a = 3\nb = 'foo' * a\nputs b"
-    zip      = ReplRunner.new(:irb).zip(commands)
-    actual   = [["a = 3", "=> 3\r"],
-                ["b = 'foo' * a", "=> \"foofoofoo\"\r"],
-                ["puts b", "foofoofoo\r\n=> nil\r"]]
-    assert_equal actual, zip
+    commands = []
+    results  = []
+    commands << "a = 3\n"
+    commands << "b = 'foo' * a\n"
+    commands << "puts b"
 
-    expected = ["a = 3",
-                "=> 3\r",
-                "b = 'foo' * a",
-                "=> \"foofoofoo\"\r",
-                "puts b",
-                "foofoofoo\r\n=> nil\r"]
-    assert_equal expected, zip.flatten
+    repl = ReplRunner.new(:irb)
+    zip  = repl.zip(commands.join(""))
+
+    repl.run do |repl|
+      commands.each do |command|
+        repl.run(command.rstrip) {|r| results << r }
+      end
+    end
+    expected = [[commands[0].rstrip, results[0]],
+                [commands[1].rstrip, results[1]],
+                [commands[2].rstrip, results[2]]]
+    assert_equal expected, zip
+
+    assert_equal expected.flatten, zip.flatten
   end
 end
