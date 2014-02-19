@@ -70,13 +70,13 @@ class ReplRunner
 
   def zip(string)
     results = []
-    lines   = string.lines.map(&:rstrip)
+    inputs  = string.lines.map(&:rstrip)
     self.run do |repl|
-      lines.each do |line|
+      inputs.each do |line|
         repl.run(line) {|result| results << result }
       end
     end
-    lines.zip(results)
+    inputs.zip(results)
   end
 
   def run(&block)
