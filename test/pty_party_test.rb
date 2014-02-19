@@ -9,7 +9,7 @@ class StreamExecTest < Test::Unit::TestCase
   end
 
   def test_multi_command_read
-    repl  = ReplRunner::PtyParty.new("irb --simple-prompt")
+    repl  = ReplRunner::PtyParty.new("env TERM=ansi-mono irb --simple-prompt")
     repl.write("STDOUT.sync = true\n")
     repl.write("1+1\n")
     repl.write("exit\n")
